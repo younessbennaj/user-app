@@ -3,13 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "main": "gulpfile.js",
-  "dependencies": {
-    "gulp-babel": "^8.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.11.1",
     "@babel/preset-react": "^7.10.4",
-    "gulp": "^4.0.2"
+    "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
