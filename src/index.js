@@ -1,29 +1,61 @@
-import * as React from 'https://cdn.skypack.dev/react@^16.13.1';
+import React, { useState } from 'https://cdn.skypack.dev/react@^16.13.1';
 import * as ReactDOM from 'https://cdn.skypack.dev/react-dom@^16.13.1';
 
+/*/
+
+    Local State or Not ?
+
+        users list => no (passed from the props)
+
+        filtered list => no (caculate from the original list with the search text)
+
+        search text => yes (change by the time)
+
+/*/
 
 //This component is the parent component of our app
 //Receive the data model as props
 const FilterableUserTable = ({ users }) => {
+    const [searchText, setSearchText] = useState('')
+
     return (
         <>
-            <SearchInput />
-            <UserTable users={users} />
+            <SearchInput searchText={searchText} setSearchText={setSearchText} />
+            <UserTable users={users} searchText={searchText} />
         </>
     )
 }
 
+
 //Gets the data entered by the user
-const SearchInput = (props) => {
+const SearchInput = ({ searchText, setSearchText }) => {
+
+    const handleChange = e => {
+        setSearchText(e.target.value);
+    }
+
     return (
         <form>
-            <input placeholder="Search..." type="text" id="search" />
+            <input value={searchText} onChange={handleChange} placeholder="Search Username..." type="text" id="search" />
         </form>
     )
 }
 
-//Displays and filters the data collection based on the data entered bu the user
-const UserTable = ({ users }) => {
+/**
+   * Renders a <UserTable /> component in charge of display and filter the data collection based on the search text data
+   * @param {Object}  props 
+   * @param {Object[]}  props.users - the users data collection to display
+   * @param  {string} props.searchText - the text used to filter the data collection
+   * @return a <UserTable /> component
+   */
+
+const UserTable = ({ users, searchText }) => {
+
+    //Return a user data collection with the searched user name
+    const filteredUsers = users.filter(user => {
+        return user.username.slice(0, searchText.length).toLowerCase() === searchText.toLowerCase();
+    })
+
     return (
         <table>
             <thead>
@@ -34,7 +66,7 @@ const UserTable = ({ users }) => {
                 </tr>
             </thead>
             <tbody>
-                {users.map(user => {
+                {filteredUsers.map(user => {
                     return (
                         <UserRow user={user} />
                     )
