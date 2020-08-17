@@ -241,6 +241,12 @@ const Navbar = ({ currentTheme, setCurrentTheme }) => {
     )
 }
 
+const StyledBackground = styled.div`
+    height: 100vh;
+    width: 100vw;
+    background: ${props => props.theme.primary};
+`;
+
 //UI theme styles
 
 const themes = {
@@ -297,8 +303,10 @@ const App = (props) => {
     return (
         // Use a Provider to pass the current theme to the tree below.
         <ThemeContext.Provider value={{ theme: currentTheme, toggleTheme }}>
-            <Navbar currentTheme={currentTheme} setCurrentTheme={setCurrentTheme} />
-            <FilterableUserTable users={users} />
+            <StyledBackground theme={currentTheme}>
+                <Navbar currentTheme={currentTheme} setCurrentTheme={setCurrentTheme} />
+                <FilterableUserTable users={users} />
+            </StyledBackground>
         </ThemeContext.Provider>
     )
 }
