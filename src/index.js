@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'https://cdn.skypack.dev/react@^16.13.1';
+import React, { useState, useEffect, useContext, createContext } from 'https://cdn.skypack.dev/react@^16.13.1';
 import * as ReactDOM from 'https://cdn.skypack.dev/react-dom@^16.13.1';
 import styled from 'https://cdn.skypack.dev/styled-components@^5.1.1';
 
@@ -19,7 +19,7 @@ const StyledContainer = styled.main`
     width: 50vw;
     margin: 2em auto;
     padding: 1em;
-    background-color: #fff;
+    background-color: ${props => props.background || '#fff'};
     border-radius: 3px;
     -webkit-box-shadow: 11px 12px 35px -21px rgba(0,0,0,0.54);
     -moz-box-shadow: 11px 12px 35px -21px rgba(0,0,0,0.54);
@@ -36,8 +36,11 @@ const StyledContainer = styled.main`
 const FilterableUserTable = ({ users }) => {
     const [searchText, setSearchText] = useState('')
 
+    //Get the UI theme
+    const { theme: { color, background } } = useContext(ThemeContext);
+
     return (
-        <StyledContainer>
+        <StyledContainer color={color} background={background}>
             <SearchInput searchText={searchText} setSearchText={setSearchText} />
             <UserTable users={users} searchText={searchText} />
         </StyledContainer>
@@ -79,17 +82,18 @@ const SearchInput = ({ searchText, setSearchText }) => {
 
 const StyledTable = styled.table`
     width: 100%;
-    border: 1px solid lightgrey;
+    border: 1px solid ${props => props.color || "lightgrey"};
     caption-side: bottom;
     table-layout: auto;
     border-collapse: collapse;
+    color: ${props => props.color};
 
     thead {
-        background-color: lightgray;
+        background-color: ${props => props.darkPrimary || "lightgrey"};
     }
 
     tbody tr:nth-child(even){
-        background-color: #f2f2f2;
+        background-color:  ${props => props.primary || "#f2f2f2"};
     }
 
     th {
@@ -134,13 +138,16 @@ const StyledTable = styled.table`
 
 const UserTable = ({ users, searchText }) => {
 
+    //Get the UI theme
+    const { theme: { color, background, primary, darkPrimary } } = useContext(ThemeContext);
+
     //Return a user data collection with the searched user name
     const filteredUsers = users.filter(user => {
         return user.username.slice(0, searchText.length).toLowerCase() === searchText.toLowerCase();
     })
 
     return (
-        <StyledTable>
+        <StyledTable color={color} primary={primary} darkPrimary={darkPrimary}>
             <caption>Users list</caption>
             <thead>
                 <tr>
@@ -162,6 +169,7 @@ const UserTable = ({ users, searchText }) => {
 
 //Diplay users information on a row
 const UserRow = ({ user: { name, username, email } }) => {
+
     return (
         <tr>
             <td>{name}</td>
@@ -171,10 +179,107 @@ const UserRow = ({ user: { name, username, email } }) => {
     )
 }
 
+//Switch button style here
+const SwitchButton = styled.button`
+    height: 2.2em;
+    border: 2px solid ${props => props.theme.color};
+    color: ${props => props.theme.color};
+    background-color: ${props => props.theme.primary};
+    font-size: medium;
+    padding-left: 1em;
+    padding-right: 1em;
+    border-radius: 3px;
+    cursor: pointer;
+
+    @-moz-document url-prefix() {
+        padding-bottom: 0;
+    }
+
+    &:focus {
+        outline: none;
+    }
+`;
+
+const StyledNavbar = styled.header`
+    background-color: ${props => props.theme.darkPrimary};
+    position: relative;
+
+    h2 {    
+        display: inline-block;
+        padding-left: 2em;
+        color: ${props => props.theme.color};
+    }
+
+    button {
+        position: absolute;
+        right: 2em;
+        top: 50%;
+        transform: translate(0, -50%);
+    }
+`
+
+/**
+* Renders a <Navbar /> component to display title app and switch button to change the UI theme
+* @param {Object}  props
+* @param {}  props.prop - description of the prop here
+* @return a <Navbar /> component
+    */
+
+const Navbar = ({ currentTheme, setCurrentTheme }) => {
+
+    const { theme, toggleTheme } = useContext(ThemeContext);
+
+    const handleClick = () => {
+        toggleTheme();
+    }
+
+    return (
+        <StyledNavbar theme={theme}>
+            <h2> {"<UserTable/>"}</h2>
+            <SwitchButton onClick={handleClick} theme={theme} >{theme.name}</SwitchButton>
+        </StyledNavbar>
+    )
+}
+
+const StyledBackground = styled.div`
+    height: 100vh;
+    width: 100vw;
+    background: ${props => props.theme.primary};
+`;
+
+//UI theme styles
+
+const themes = {
+    light: {
+        name: 'light',
+        color: '#000000',
+        background: '#ffffff',
+        primary: '#f2f2f2',
+        darkPrimary: 'lightgrey'
+    },
+    dark: {
+        name: 'dark',
+        color: '#ffffff',
+        background: '#000000',
+        grey: '#2d2d2d',
+        primary: '#1c1c1c',
+        darkPrimary: '#000000'
+    },
+};
+
+//Context creation to share "global" data through the components tree 
+
+// We create a context for the current theme (with "light" as the default).
+const ThemeContext = createContext();
+
+
 const App = (props) => {
 
+    //Local state here...
     const [users, setUsers] = useState([]);
+    const [currentTheme, setCurrentTheme] = useState(themes.light);
 
+    //Side effect code here...
     useEffect(() => {
         //React guarantees that this code will be executed when the DOM is rendered 
 
@@ -191,8 +296,18 @@ const App = (props) => {
 
     }, [])//no dependencies => no need to call this function more than one time.
 
+    const toggleTheme = () => {
+        currentTheme.name === 'light' ? setCurrentTheme(themes.dark) : setCurrentTheme(themes.light);
+    }
+
     return (
-        <FilterableUserTable users={users} />
+        // Use a Provider to pass the current theme to the tree below.
+        <ThemeContext.Provider value={{ theme: currentTheme, toggleTheme }}>
+            <StyledBackground theme={currentTheme}>
+                <Navbar currentTheme={currentTheme} setCurrentTheme={setCurrentTheme} />
+                <FilterableUserTable users={users} />
+            </StyledBackground>
+        </ThemeContext.Provider>
     )
 }
 
