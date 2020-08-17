@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext } from 'https://cdn.skypack.dev/react@^16.13.1';
+import React, { useState, useEffect, useContext, createContext } from 'https://cdn.skypack.dev/react@^16.13.1';
 import * as ReactDOM from 'https://cdn.skypack.dev/react-dom@^16.13.1';
 import styled from 'https://cdn.skypack.dev/styled-components@^5.1.1';
 
@@ -134,6 +134,8 @@ const StyledTable = styled.table`
 
 const UserTable = ({ users, searchText }) => {
 
+    const { theme } = useContext(ThemeContext);
+
     //Return a user data collection with the searched user name
     const filteredUsers = users.filter(user => {
         return user.username.slice(0, searchText.length).toLowerCase() === searchText.toLowerCase();
@@ -162,6 +164,7 @@ const UserTable = ({ users, searchText }) => {
 
 //Diplay users information on a row
 const UserRow = ({ user: { name, username, email } }) => {
+
     return (
         <tr>
             <td>{name}</td>
@@ -183,9 +186,10 @@ const SwitchButton = styled.button``;
 
 const Navbar = ({ currentTheme, setCurrentTheme }) => {
 
+    const { theme, toggleTheme } = useContext(ThemeContext);
 
     const handleClick = () => {
-        currentTheme === 'light' ? setCurrentTheme('dark') : setCurrentTheme('light');
+        toggleTheme();
     }
 
     return (
@@ -196,6 +200,10 @@ const Navbar = ({ currentTheme, setCurrentTheme }) => {
     )
 }
 
+//Context creation to share "global" data through the components tree 
+
+// We create a context for the current theme (with "light" as the default).
+const ThemeContext = createContext();
 
 
 const App = (props) => {
@@ -221,16 +229,16 @@ const App = (props) => {
 
     }, [])//no dependencies => no need to call this function more than one time.
 
-    //Context creation to share "global" data through the components tree 
-
-    // We create a context for the current theme (with "light" as the default).
-    const ThemeContext = createContext(currentTheme);
+    const toggleTheme = () => {
+        currentTheme === 'light' ? setCurrentTheme('dark') : setCurrentTheme('light');
+    }
 
     return (
-        <>
+        // Use a Provider to pass the current theme to the tree below.
+        <ThemeContext.Provider value={{ theme: currentTheme, toggleTheme }}>
             <Navbar currentTheme={currentTheme} setCurrentTheme={setCurrentTheme} />
             <FilterableUserTable users={users} />
-        </>
+        </ThemeContext.Provider>
     )
 }
 
