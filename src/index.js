@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'https://cdn.skypack.dev/react@^16.13.1';
+import React, { useState, useEffect, createContext } from 'https://cdn.skypack.dev/react@^16.13.1';
 import * as ReactDOM from 'https://cdn.skypack.dev/react-dom@^16.13.1';
 import styled from 'https://cdn.skypack.dev/styled-components@^5.1.1';
 
@@ -200,9 +200,11 @@ const Navbar = ({ currentTheme, setCurrentTheme }) => {
 
 const App = (props) => {
 
+    //Local state here...
     const [users, setUsers] = useState([]);
     const [currentTheme, setCurrentTheme] = useState('light');
 
+    //Side effect code here...
     useEffect(() => {
         //React guarantees that this code will be executed when the DOM is rendered 
 
@@ -218,6 +220,11 @@ const App = (props) => {
             })
 
     }, [])//no dependencies => no need to call this function more than one time.
+
+    //Context creation to share "global" data through the components tree 
+
+    // We create a context for the current theme (with "light" as the default).
+    const ThemeContext = createContext(currentTheme);
 
     return (
         <>
