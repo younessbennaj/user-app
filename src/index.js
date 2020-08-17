@@ -171,6 +171,30 @@ const UserRow = ({ user: { name, username, email } }) => {
     )
 }
 
+const SwitchButton = () => {
+    return (
+        <button>Dark</button>
+    )
+}
+
+/**
+* Renders a <Navbar /> component to display title app and switch button to change the UI theme
+* @param {Object}  props
+* @param {}  props.prop - description of the prop here
+* @return a <Navbar /> component
+    */
+
+const Navbar = (props) => {
+    return (
+        <header>
+            <h2>User Table</h2>
+            <SwitchButton />
+        </header>
+    )
+}
+
+
+
 const App = (props) => {
 
     const [users, setUsers] = useState([]);
@@ -192,7 +216,10 @@ const App = (props) => {
     }, [])//no dependencies => no need to call this function more than one time.
 
     return (
-        <FilterableUserTable users={users} />
+        <>
+            <Navbar />
+            <FilterableUserTable users={users} />
+        </>
     )
 }
 
