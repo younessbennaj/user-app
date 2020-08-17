@@ -171,11 +171,8 @@ const UserRow = ({ user: { name, username, email } }) => {
     )
 }
 
-const SwitchButton = () => {
-    return (
-        <button>Dark</button>
-    )
-}
+//Switch button style here
+const SwitchButton = styled.button``;
 
 /**
 * Renders a <Navbar /> component to display title app and switch button to change the UI theme
@@ -184,11 +181,17 @@ const SwitchButton = () => {
 * @return a <Navbar /> component
     */
 
-const Navbar = (props) => {
+const Navbar = ({ currentTheme, setCurrentTheme }) => {
+
+
+    const handleClick = () => {
+        currentTheme === 'light' ? setCurrentTheme('dark') : setCurrentTheme('light');
+    }
+
     return (
         <header>
             <h2>User Table</h2>
-            <SwitchButton />
+            <SwitchButton onClick={handleClick} >{currentTheme}</SwitchButton>
         </header>
     )
 }
@@ -198,6 +201,7 @@ const Navbar = (props) => {
 const App = (props) => {
 
     const [users, setUsers] = useState([]);
+    const [currentTheme, setCurrentTheme] = useState('light');
 
     useEffect(() => {
         //React guarantees that this code will be executed when the DOM is rendered 
@@ -217,7 +221,7 @@ const App = (props) => {
 
     return (
         <>
-            <Navbar />
+            <Navbar currentTheme={currentTheme} setCurrentTheme={setCurrentTheme} />
             <FilterableUserTable users={users} />
         </>
     )
