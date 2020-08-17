@@ -19,7 +19,7 @@ const StyledContainer = styled.main`
     width: 50vw;
     margin: 2em auto;
     padding: 1em;
-    background-color: #fff;
+    background-color: ${props => props.background || '#fff'};
     border-radius: 3px;
     -webkit-box-shadow: 11px 12px 35px -21px rgba(0,0,0,0.54);
     -moz-box-shadow: 11px 12px 35px -21px rgba(0,0,0,0.54);
@@ -36,8 +36,11 @@ const StyledContainer = styled.main`
 const FilterableUserTable = ({ users }) => {
     const [searchText, setSearchText] = useState('')
 
+    //Get the UI theme
+    const { theme: { color, background } } = useContext(ThemeContext);
+
     return (
-        <StyledContainer>
+        <StyledContainer color={color} background={background}>
             <SearchInput searchText={searchText} setSearchText={setSearchText} />
             <UserTable users={users} searchText={searchText} />
         </StyledContainer>
@@ -134,7 +137,9 @@ const StyledTable = styled.table`
 
 const UserTable = ({ users, searchText }) => {
 
+    //Get the UI theme
     const { theme } = useContext(ThemeContext);
+    console.log(theme);
 
     //Return a user data collection with the searched user name
     const filteredUsers = users.filter(user => {
@@ -195,10 +200,25 @@ const Navbar = ({ currentTheme, setCurrentTheme }) => {
     return (
         <header>
             <h2>User Table</h2>
-            <SwitchButton onClick={handleClick} >{currentTheme}</SwitchButton>
+            <SwitchButton onClick={handleClick} >{theme.name}</SwitchButton>
         </header>
     )
 }
+
+//UI theme styles
+
+const themes = {
+    light: {
+        name: 'light',
+        color: '#000000',
+        background: 'lightgrey',
+    },
+    dark: {
+        name: 'dark',
+        foreground: '#ffffff',
+        background: '#000000',
+    },
+};
 
 //Context creation to share "global" data through the components tree 
 
@@ -210,7 +230,7 @@ const App = (props) => {
 
     //Local state here...
     const [users, setUsers] = useState([]);
-    const [currentTheme, setCurrentTheme] = useState('light');
+    const [currentTheme, setCurrentTheme] = useState(themes.light);
 
     //Side effect code here...
     useEffect(() => {
@@ -230,7 +250,7 @@ const App = (props) => {
     }, [])//no dependencies => no need to call this function more than one time.
 
     const toggleTheme = () => {
-        currentTheme === 'light' ? setCurrentTheme('dark') : setCurrentTheme('light');
+        currentTheme.name === 'light' ? setCurrentTheme(themes.dark) : setCurrentTheme(themes.light);
     }
 
     return (
