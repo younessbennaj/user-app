@@ -82,17 +82,18 @@ const SearchInput = ({ searchText, setSearchText }) => {
 
 const StyledTable = styled.table`
     width: 100%;
-    border: 1px solid lightgrey;
+    border: 1px solid ${props => props.color || "lightgrey"};
     caption-side: bottom;
     table-layout: auto;
     border-collapse: collapse;
+    color: ${props => props.color};
 
     thead {
-        background-color: lightgray;
+        background-color: ${props => props.darkPrimary || "lightgrey"};
     }
 
     tbody tr:nth-child(even){
-        background-color: #f2f2f2;
+        background-color:  ${props => props.primary || "#f2f2f2"};
     }
 
     th {
@@ -138,8 +139,7 @@ const StyledTable = styled.table`
 const UserTable = ({ users, searchText }) => {
 
     //Get the UI theme
-    const { theme } = useContext(ThemeContext);
-    console.log(theme);
+    const { theme: { color, background, primary, darkPrimary } } = useContext(ThemeContext);
 
     //Return a user data collection with the searched user name
     const filteredUsers = users.filter(user => {
@@ -147,7 +147,7 @@ const UserTable = ({ users, searchText }) => {
     })
 
     return (
-        <StyledTable>
+        <StyledTable color={color} primary={primary} darkPrimary={darkPrimary}>
             <caption>Users list</caption>
             <thead>
                 <tr>
@@ -211,12 +211,17 @@ const themes = {
     light: {
         name: 'light',
         color: '#000000',
-        background: 'lightgrey',
+        background: '#ffffff',
+        primary: '#f2f2f2',
+        darkPrimary: 'lightgrey'
     },
     dark: {
         name: 'dark',
-        foreground: '#ffffff',
+        color: '#ffffff',
         background: '#000000',
+        grey: '#2d2d2d',
+        primary: '#1c1c1c',
+        darkPrimary: '#000000'
     },
 };
 
