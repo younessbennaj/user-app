@@ -180,7 +180,43 @@ const UserRow = ({ user: { name, username, email } }) => {
 }
 
 //Switch button style here
-const SwitchButton = styled.button``;
+const SwitchButton = styled.button`
+    height: 2.2em;
+    border: 2px solid ${props => props.theme.color};
+    color: ${props => props.theme.color};
+    background-color: ${props => props.theme.primary};
+    font-size: medium;
+    padding-left: 1em;
+    padding-right: 1em;
+    border-radius: 3px;
+    cursor: pointer;
+
+    @-moz-document url-prefix() {
+        padding-bottom: 0;
+    }
+
+    &:focus {
+        outline: none;
+    }
+`;
+
+const StyledNavbar = styled.header`
+    background-color: ${props => props.theme.darkPrimary};
+    position: relative;
+
+    h2 {    
+        display: inline-block;
+        padding-left: 2em;
+        color: ${props => props.theme.color};
+    }
+
+    button {
+        position: absolute;
+        right: 2em;
+        top: 50%;
+        transform: translate(0, -50%);
+    }
+`
 
 /**
 * Renders a <Navbar /> component to display title app and switch button to change the UI theme
@@ -198,10 +234,10 @@ const Navbar = ({ currentTheme, setCurrentTheme }) => {
     }
 
     return (
-        <header>
-            <h2>User Table</h2>
-            <SwitchButton onClick={handleClick} >{theme.name}</SwitchButton>
-        </header>
+        <StyledNavbar theme={theme}>
+            <h2> {"<UserTable/>"}</h2>
+            <SwitchButton onClick={handleClick} theme={theme} >{theme.name}</SwitchButton>
+        </StyledNavbar>
     )
 }
 
